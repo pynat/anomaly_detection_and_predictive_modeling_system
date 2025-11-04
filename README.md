@@ -1,17 +1,9 @@
-# Probabilistic Trading Strategy for Solana
+# Probabilistic Decision Strategy for Financial Time Series
 
 ## Executive Summary
-This project applies statistical modeling and machine learning to analyze Solana (SOL) price behavior and design profitable trading strategies. Using probability theory, Bayesian indicator evaluation, and XGBoost modeling, I developed a strategy achieving:
-
-- **Initial Capital:** $10,000
-- **Final Value:** $17,918
-- **Total Return:** 79.2%
-- **Number of Trades:** 15
-- **Win Rate:** 86.7%
-- **Avg Return per Trade:** 4.04%
-- **Annualized Volatility:** 21.8%
-- **Max Drawdown:** -2.9%
-- **Sharpe Ratio:** 3.54
+A research-driven framework for probabilistic modeling and decision analysis in dynamic financial environments.
+This project applies statistical modeling and machine learning to analyze financial time series and design probabilistic decision frameworks for dynamic environments. 
+By combining Bayesian indicator evaluation, statistical distribution fitting, and ensemble modeling (XGBoost), the framework demonstrates how to quantify uncertainty, evaluate signal strength, and manage risk across varying volatility regimes.
 
 ## Project Overview
 This end-to-end pipeline covers:
@@ -25,10 +17,10 @@ This end-to-end pipeline covers:
 - Volatility and regime aware risk management
 
 ## Objective
-Explore statistical properties of SOL daily returns and build robust, explainable trading strategies based on probabilistic signals and machine learning models.
+Explore statistical properties of daily returns in dynamic financial time series and build robust, explainable probabilistic models for decision support under uncertainty.
 
 ## Methodology
-- **Data:** 365 days SOL/USDT 1D OHLCV via Binance API
+- **Data:** 365 days SOL/USDT 1D OHLCV via API
 - **Validation:** Time series split, no look-ahead bias
 - **Features:** technical indicators + regime variables
 - **Models:** XGBoost classifier + statistical distributions
@@ -75,13 +67,12 @@ Calculated daily returns:
 - Quiet phases (LOW_VOL_THRESHOLD) alternating with turbulent periods (HIGH_VOL_THRESHOLD)
 - Volatility forecasting models could be highly valuable
 
-**Strategic Implications:**
-- Dynamic position sizing based on current volatility regime
-- Volatility based strategy: vol (<LOW_VOL_THRESHOLD): bigger positions, vol(>HIGH_VOL_THRESHOLD): smaller positions
-- Trading vol breakouts from <BREAKOUT_LOW> to >BREAKOUT_HIGH after that bigger movements tend to follow
-- Contrarian position after EXTREME_MOVE_THRESHOLD
-
-  
+**Decision Implications:**
+- Adaptive weighting of decisions based on current volatility regime
+- Dynamic scaling of exposure depending on volatility levels
+- Monitoring volatility breakouts as potential signals for significant regime shifts
+- Counter-signal behavior identified after extreme deviations
+     
 ![Indicator Correlation](images/indicator_correlation.png)   
     
          
@@ -93,17 +84,17 @@ Used Bayesian conditional probability to evaluate signal strength.
 === BAYES ANALYSIS FOR ALL INDICATORS ===
 Baseline P(Up-Day) = 0.508
 ------------------------------------------------------------
-vol_expansion             | P(Up|Signal)=0.444 | Lift=-0.064 (-12.6%) | Freq=0.075 | 🔴 BEARISH
-volume_spike              | P(Up|Signal)=0.706 | Lift=+0.198 (+38.9%) | Freq=0.047 | 🟢 BULLISH
-breakout_signal           | P(Up|Signal)=0.333 | Lift=-0.175 (-34.4%) | Freq=0.008 | 🔴 BEARISH
-extreme_down              | P(Up|Signal)=0.600 | Lift=+0.092 (+18.0%) | Freq=0.014 | 🟢 BULLISH
-extreme_up                | P(Up|Signal)=0.444 | Lift=-0.064 (-12.6%) | Freq=0.025 | 🔴 BEARISH
-vol_regime_change         | P(Up|Signal)=0.447 | Lift=-0.061 (-12.1%) | Freq=0.236 | 🔴 BEARISH
-golden_cross_ema          | P(Up|Signal)=0.286 | Lift=-0.223 (-43.8%) | Freq=0.019 | 🔴 BEARISH
-death_cross_ema           | P(Up|Signal)=0.125 | Lift=-0.383 (-75.4%) | Freq=0.022 | 🔴 BEARISH
+vol_expansion             | P(Up|Signal)=0.444 | Lift=-0.064 (-12.6%) | Freq=0.075 | 🔴 NEGATIVE
+volume_spike              | P(Up|Signal)=0.706 | Lift=+0.198 (+38.9%) | Freq=0.047 | 🟢 POSITIVE
+breakout_signal           | P(Up|Signal)=0.333 | Lift=-0.175 (-34.4%) | Freq=0.008 | 🔴 NEGATIVE
+extreme_down              | P(Up|Signal)=0.600 | Lift=+0.092 (+18.0%) | Freq=0.014 | 🟢 POSITIVE
+extreme_up                | P(Up|Signal)=0.444 | Lift=-0.064 (-12.6%) | Freq=0.025 | 🔴 NEGATIVE
+vol_regime_change         | P(Up|Signal)=0.447 | Lift=-0.061 (-12.1%) | Freq=0.236 | 🔴 NEGATIVE
+golden_cross_ema          | P(Up|Signal)=0.286 | Lift=-0.223 (-43.8%) | Freq=0.019 | 🔴 NEGATIVE
+death_cross_ema           | P(Up|Signal)=0.125 | Lift=-0.383 (-75.4%) | Freq=0.022 | 🔴 NEGATIVE
 breakout_high_7d          | P(Up|Signal)=0.545 | Lift=+0.037 (+7.3%) | Freq=0.122 | ⚪ NEUTRAL
 trend_alignment           | P(Up|Signal)=0.513 | Lift=+0.005 (+1.0%) | Freq=0.314 | ⚪ NEUTRAL
-extreme_reversal_setup    | P(Up|Signal)=0.333 | Lift=-0.175 (-34.4%) | Freq=0.008 | 🔴 BEARISH
+extreme_reversal_setup    | P(Up|Signal)=0.333 | Lift=-0.175 (-34.4%) | Freq=0.008 | 🔴 NEGATIVE
 
 P(Up-Day | vol_regime = 0) = 0.598 (n=87)
 P(Up-Day | vol_regime = 1) = 0.471 (n=187)
@@ -114,7 +105,7 @@ P(Up-Day | vol_regime = 2) = 0.500 (n=86)
    
       
 **Findings:**
-- **Volume spike:** 70.6% up probability (+38.9% lift), occurs 4.7% of time → strong bullish indicator when unusual volume detected
+- **Volume spike:** 70.6% up probability (+38.9% lift), occurs 4.7% of time → strong positive indicator when unusual volume detected
 - **Extreme down:** 60% success rate (+18% lift) → could be weighted heavier in strategy but very rare
 - **Volume expansion:** 44.4% up probability (-12.6% lift), occurs 7.5% of time → expanding volume without direction is bearish
 - **Extreme up:** 44.4% up probability (-12.6% lift), occurs 2.5% of time → overbought conditions lead to pullbacks
@@ -198,7 +189,7 @@ Note: Due to the proprietary nature of this approach, specific signal-regime rel
 
 
             
-## Machine Learning XGBoost Strategies
+## Probabilistic Classification using XGBoost
 Predicted whether next day return exceeds threshold:
 
 ```python
@@ -227,7 +218,7 @@ Used SHAP values for feature selection and interpretability. Here you can see th
 ![Beeswarm Plot](images/beeswarm_xgboost.png)   
 
 
-### Simple Strategy Based on XGBoost Insights
+### Model-Based Decision Simulation
 ```bash Final Capital:** $11,899.60    
 Total Return: 19.00%     
 Long Signals: 15 | Exit Signals: 232     
@@ -277,7 +268,7 @@ Python, pandas, numpy, scikit-learn, XGBoost, SciPy, SHAP, matplotlib, seaborn
 - Transaction costs, Slippage not included in Calculations
 
 ## Next Steps
-Test strategies in live performance with proper risk management and position sizing protocols.
+Test models in real-time evaluation environments. Extend framework for multi-asset analysis and real-time probabilistic forecasting.
 
 ---
 
